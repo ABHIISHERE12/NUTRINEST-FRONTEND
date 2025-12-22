@@ -51,6 +51,17 @@ const Orders = () => {
     }
   };
 
+  const handleCompleteAndRemove = async (orderId) => {
+    if (!window.confirm("Mark this order as complete and remove it from the dashboard?")) return;
+    try {
+      await axiosClient.delete(`/admin/orders/${orderId}`);
+      setOrders(orders.filter((o) => o._id !== orderId));
+      toast.success("Order marked as completed and removed");
+    } catch (err) {
+      toast.error("Failed to remove order");
+    }
+  };
+
   const filtered = orders.filter((o) => {
     const searchStr = `${o._id} ${o.address?.name || ""} ${o.user?.username || ""}`.toLowerCase();
     return searchStr.includes(query.toLowerCase());
@@ -88,6 +99,7 @@ const Orders = () => {
                 <th className="px-6 py-4">Payment / Total</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -188,6 +200,16 @@ const Orders = () => {
                     {/* DATE */}
                     <td className="px-6 py-4 text-xs text-gray-500">
                       {new Date(order.createdAt).toLocaleDateString()}
+                    </td>
+
+                    {/* ACTIONS */}
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={() => handleCompleteAndRemove(order._id)}
+                        className="text-xs bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition transform hover:scale-105"
+                      >
+                        Complete ✓
+                      </button>
                     </td>
                   </tr>
                 ))
