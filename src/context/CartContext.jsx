@@ -34,6 +34,12 @@ export const CartProvider = ({ children }) => {
       }
       return;
     }
+
+    // Skip API call for admin to avoid 401 errors (admin is not a 'User' model)
+    if (user.role === "admin") {
+      setCart([]);
+      return;
+    }
     try {
       setLoading(true);
       const res = await axiosClient.get("/cart");
