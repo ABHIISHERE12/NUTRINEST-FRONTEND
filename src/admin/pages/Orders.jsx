@@ -1,169 +1,201 @@
 import React, { useEffect, useState } from "react";
-import { initialOrders } from "../data/orders";
-import { getFromLocalStorage, saveToLocalStorage } from "../utils/localStorage";
 import axiosClient from "../../api/axiosClient";
-import ProductCard from "../components/ProductCard";
-import almondsImg from "../../assets/almonds.png";
-import cashewsImg from "../../assets/cashews.png";
-import walnutsImg from "../../assets/walnuts.png";
 import { io as ioClient } from "socket.io-client";
+import { toast } from "react-hot-toast";
 
-// ✅ API base strictly from env
+// API base strictly from env
 const API_BASE = import.meta.env.VITE_API_URL;
 
 const Orders = () => {
-  const [orders, setOrders] = useState(() => {
-    const stored = getFromLocalStorage("orders", null);
-    if (stored && Array.isArray(stored) && stored.length) return stored;
-    return initialOrders;
-  });
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
 
-  useEffect(() => saveToLocalStorage("orders", orders), [orders]);
-
-  // 🔌 Realtime: listen for new orders from backend
-  useEffect(() => {
-    if (!API_BASE) {
-      console.warn("Socket disabled: VITE_API_URL not set");
-      return;
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axiosClient.get("/admin/orders");
+      setOrders(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to fetch orders", err);
+      toast.error("Failed to load orders from server");
+    } finally {
+      setLoading(false);
     }
-
-    // Socket connects to backend ROOT, not /api
-    const socket = ioClient(API_BASE, {
-      transports: ["websocket"],
-    });
-
-    socket.on("newOrder", (o) => {
-      if (!o || typeof o !== "object") return;
-      const items = (o.items || []).map((it) => ({
-        name: (it.product && it.product.name) || it.name || "Product",
-        qty: it.quantity || it.qty || 1,
-        image: (it.product && it.product.image) || it.image || "",
-      }));
-
-      const addr =
-        typeof o.address === "string"
-          ? o.address
-          : o.address
-          ? Object.values(o.address).filter(Boolean).join(", ")
-          : "";
-
-      const getCustomerName = (order) => {
-        if (order.address && order.address.name) return order.address.name;
-        if (order.user) {
-          const name = order.user.username || order.user.name || "";
-          if (name && name.toLowerCase() !== "user") return name;
-          if (order.user.email) return order.user.email.split("@")[0];
-        }
-        if (order.customer) return order.customer;
-        if (order.email) return (order.email || "").split("@")[0];
-        return "User";
-      };
-
-      const mapped = {
-        id: o._id || o.id,
-        customer: getCustomerName(o),
-        email: (o.user && o.user.email) || o.email || "",
-        date: new Date(
-          o.createdAt || o.date || Date.now()
-        ).toLocaleDateString(),
-        total: o.totalAmount || o.total || 0,
-        status: o.status || "Pending",
-        paymentMode:
-          o.paymentMethod === "RAZORPAY"
-            ? "Prepaid"
-            : o.paymentMethod || o.paymentMode || "Prepaid",
-        address: addr,
-        items,
-      };
-
-      setOrders((prev) => {
-        if (prev.some((p) => p.id === mapped.id)) return prev;
-        return [mapped, ...prev];
-      });
-    });
-
-    return () => socket.disconnect();
-  }, []);
-
-  // 📦 Fetch orders from backend (admin)
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchOrders = async () => {
-      try {
-        const { data } = await axiosClient.get("/admin/orders");
-        if (!mounted) return;
-
-        const mapped = (Array.isArray(data) ? data : []).map((o) => {
-          const items = (o.items || []).map((it) => ({
-            name: (it.product && it.product.name) || it.name || "Product",
-            qty: it.quantity || it.qty || 1,
-            image: (it.product && it.product.image) || it.image || "",
-          }));
-
-          const addr =
-            typeof o.address === "string"
-              ? o.address
-              : o.address
-              ? Object.values(o.address).filter(Boolean).join(", ")
-              : "";
-
-          const getCustomerName = (order) => {
-            if (order.address && order.address.name) return order.address.name;
-            if (order.user) {
-              const name = order.user.username || order.user.name || "";
-              if (name && name.toLowerCase() !== "user") return name;
-              if (order.user.email) return order.user.email.split("@")[0];
-            }
-            if (order.customer) return order.customer;
-            if (order.email) return (order.email || "").split("@")[0];
-            return "User";
-          };
-
-          return {
-            id: o._id || o.id,
-            customer: getCustomerName(o),
-            email: (o.user && o.user.email) || o.email || "",
-            date: new Date(
-              o.createdAt || o.date || Date.now()
-            ).toLocaleDateString(),
-            total: o.totalAmount || o.total || 0,
-            status: o.status || "Pending",
-            paymentMode:
-              o.paymentMethod === "RAZORPAY"
-                ? "Prepaid"
-                : o.paymentMethod || o.paymentMode || "Prepaid",
-            address: addr,
-            items,
-          };
-        });
-
-        if (mapped.length > 0) setOrders(mapped);
-      } catch {
-        // fallback to local/demo orders
-      }
-    };
-
-    fetchOrders();
-    return () => (mounted = false);
-  }, []);
-
-  const filtered = orders.filter(
-    (o) =>
-      o.id.toLowerCase().includes(query.toLowerCase()) ||
-      o.customer.toLowerCase().includes(query.toLowerCase())
-  );
-
-  const changeStatus = (id, status) => {
-    setOrders(orders.map((o) => (o.id === id ? { ...o, status } : o)));
   };
 
+  useEffect(() => {
+    fetchOrders();
+
+    // Realtime: listen for new orders
+    if (API_BASE) {
+      const socket = ioClient(API_BASE, { transports: ["websocket"] });
+      socket.on("newOrder", (newOrder) => {
+        setOrders((prev) => {
+          if (prev.some((o) => o._id === newOrder._id)) return prev;
+          return [newOrder, ...prev];
+        });
+        toast.success("New order received!", { position: "top-right" });
+      });
+      return () => socket.disconnect();
+    }
+  }, []);
+
+  const updateStatus = async (orderId, newStatus) => {
+    try {
+      await axiosClient.put(`/admin/orders/${orderId}`, { status: newStatus });
+      setOrders(orders.map((o) => (o._id === orderId ? { ...o, status: newStatus } : o)));
+      toast.success(`Order status updated to ${newStatus}`);
+    } catch (err) {
+      toast.error("Failed to update status");
+    }
+  };
+
+  const filtered = orders.filter((o) => {
+    const searchStr = `${o._id} ${o.address?.name || ""} ${o.user?.username || ""}`.toLowerCase();
+    return searchStr.includes(query.toLowerCase());
+  });
+
+  if (loading) return <div className="p-10 text-center">Loading orders...</div>;
+
   return (
-    <div className="container-fluid">
-      {/* UI BELOW IS UNCHANGED */}
-      {/* Your UI code stays exactly the same */}
-      {/* ... */}
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Order Management</h1>
+          <p className="text-gray-500 text-sm">Monitor and manage customer orders real-time.</p>
+        </div>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search Order ID, Name..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none w-full md:w-80 shadow-sm"
+          />
+          <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
+              <tr>
+                <th className="px-6 py-4">Order / Photo</th>
+                <th className="px-6 py-4">Customer Details</th>
+                <th className="px-6 py-4">Delivery Address</th>
+                <th className="px-6 py-4">Payment / Total</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="px-6 py-10 text-center text-gray-500">
+                    No orders found.
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((order) => (
+                  <tr key={order._id} className="hover:bg-gray-50 transition-colors">
+                    {/* PHOTO & ID */}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden border">
+                          {order.items?.[0]?.product?.image ? (
+                            <img
+                              src={order.items[0].product.image}
+                              alt="Product"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+                              No Pix
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-xs font-mono text-gray-400">ID: #{order._id.slice(-6)}</p>
+                          <p className="text-sm font-semibold text-gray-800">
+                            {order.items?.length} Item(s)
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* CUSTOMER */}
+                    <td className="px-6 py-4">
+                      <div className="text-sm">
+                        <p className="font-bold text-gray-900">
+                          {order.address?.name || order.user?.username || "Guest User"}
+                        </p>
+                        <p className="text-gray-500">{order.address?.email || order.user?.email || "N/A"}</p>
+                        <p className="text-gray-500 font-medium">{order.address?.phone || "No Phone"}</p>
+                      </div>
+                    </td>
+
+                    {/* ADDRESS */}
+                    <td className="px-6 py-4">
+                      <div className="text-xs text-gray-600 max-w-[200px] leading-relaxed">
+                        <p>{order.address?.line1}</p>
+                        {order.address?.line2 && <p>{order.address.line2}</p>}
+                        <p>
+                          {order.address?.city}, {order.address?.postalCode}
+                        </p>
+                      </div>
+                    </td>
+
+                    {/* PAYMENT */}
+                    <td className="px-6 py-4">
+                      <div className="text-sm">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                            order.paymentMethod === "COD"
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-blue-100 text-blue-700"
+                          }`}
+                        >
+                          {order.paymentMethod}
+                        </span>
+                        <p className="mt-1 text-lg font-bold text-gray-900">₹{order.totalAmount}</p>
+                      </div>
+                    </td>
+
+                    {/* STATUS */}
+                    <td className="px-6 py-4">
+                      <select
+                        value={order.status}
+                        onChange={(e) => updateStatus(order._id, e.target.value)}
+                        className={`text-xs font-semibold px-3 py-1.5 rounded-full border-0 outline-none cursor-pointer shadow-sm ${
+                          order.status === "delivered"
+                            ? "bg-green-100 text-green-700"
+                            : order.status === "shipped"
+                            ? "bg-blue-100 text-blue-700"
+                            : order.status === "cancelled"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </td>
+
+                    {/* DATE */}
+                    <td className="px-6 py-4 text-xs text-gray-500">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

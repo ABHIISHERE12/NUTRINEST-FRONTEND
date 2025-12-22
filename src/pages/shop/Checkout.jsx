@@ -24,6 +24,7 @@ const Checkout = () => {
 
   const [form, setForm] = useState({
     email: "",
+    phone: "",
     firstName: "",
     lastName: "",
     address: "",
@@ -67,6 +68,7 @@ const Checkout = () => {
       postalCode: form.postal,
       country: form.country,
       email: form.email,
+      phone: form.phone,
     };
 
     const items = isBuyNow
@@ -131,10 +133,18 @@ const Checkout = () => {
           {/* CONTACT */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <h2 className="text-xl font-bold mb-4 text-gray-800">Contact Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="mb-2">
+                <label className="text-sm text-gray-600">Email Address</label>
+                <input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} className="w-full border p-3 rounded-lg focus:border-[#82D173] outline-none transition" />
+              </div>
+              <div className="mb-2">
+                <label className="text-sm text-gray-600">Phone Number</label>
+                <input type="text" name="phone" placeholder="Phone Number" value={form.phone} onChange={handleChange} className="w-full border p-3 rounded-lg focus:border-[#82D173] outline-none transition" />
+              </div>
+            </div>
 
-            <input type="email" name="email" placeholder="Email or Phone Number" value={form.email} onChange={handleChange} className="w-full border p-3 rounded-lg focus:border-[#82D173] outline-none transition mb-2" />
-
-            <label className="flex items-center gap-2 text-sm text-gray-600">
+            <label className="flex items-center gap-2 text-sm text-gray-600 mt-2">
               <input type="checkbox" name="saveInfo" onChange={handleChange} className="accent-[#82D173]" />
               Email me with news and offers
             </label>
