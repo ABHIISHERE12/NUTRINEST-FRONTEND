@@ -12,6 +12,9 @@ import SpecialOfferSection from "../../components/home/SpecialOfferSection";
 import CustomerReviews from "../../components/home/CustomerReviews";
 import ReviewForm from "../../components/home/ReviewForm";
 import axiosClient from "../../api/axiosClient";
+import almondsImg from "../../assets/almonds.png";
+import cashewsImg from "../../assets/cashews.png";
+import walnutsImg from "../../assets/walnuts.png";
 
 const sampleProducts = [
   {
@@ -19,7 +22,7 @@ const sampleProducts = [
     name: "Organic Almonds",
     price: 499,
     originalPrice: 699,
-    image: "/almonds.png",
+    image: almondsImg,
     rating: 5,
     numReviews: 12,
     discount: 28,
@@ -31,7 +34,7 @@ const sampleProducts = [
     name: "Premium Cashews",
     price: 599,
     originalPrice: 799,
-    image: "/cashews.png",
+    image: cashewsImg,
     rating: 5,
     numReviews: 15,
     discount: 25,
@@ -43,13 +46,13 @@ const sampleProducts = [
     name: "Walnut Kernels",
     price: 450,
     originalPrice: 550,
-    image: "/walnuts.png",
+    image: walnutsImg,
     rating: 5,
     numReviews: 8,
     discount: 18,
     badge: "BESTSELLER",
     category: "Dry Fruits",
-  }
+  },
 ];
 
 const Home = () => {
@@ -278,8 +281,7 @@ const Home = () => {
 
       <CustomerReviews />
 
-        <ReviewForm onReviewAdded={fetchReviews} />
-
+      <ReviewForm onReviewAdded={fetchReviews} />
     </div>
   );
 };
