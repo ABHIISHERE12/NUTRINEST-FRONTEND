@@ -14,7 +14,7 @@ import { useWishlist } from "../../context/WishlistContext";
 import almondsImg from "../../assets/almonds.png";
 import cashewsImg from "../../assets/cashews.png";
 import walnutsImg from "../../assets/walnuts.png";
-import dealBg from "../../assets/deal2.png"; // ✅ NEW BACKGROUND
+import dealBg from "../../assets/deal2.png";
 
 const SpecialOfferSection = () => {
   const navigate = useNavigate();
@@ -94,13 +94,11 @@ const SpecialOfferSection = () => {
 
   return (
     <section className="relative py-20 overflow-hidden border-t border-b border-yellow-200">
-      {/* Background Image */}
+      {/* Background */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${dealBg})` }}
       />
-
-      {/* Soft Cream Overlay (KEY PART) */}
       <div className="absolute inset-0 bg-[#fff7e6]/85 backdrop-blur-[1px]" />
 
       {/* Content */}
@@ -159,28 +157,48 @@ const SpecialOfferSection = () => {
           >
             {dealProducts.map((p) => (
               <SwiperSlide key={p._id}>
-                <div className="bg-white rounded-2xl p-5 shadow-md hover:shadow-xl transition h-full">
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    onClick={() => openModal(p)}
-                    className="w-full h-52 object-contain rounded-xl mb-4 cursor-pointer hover:opacity-90 transition"
-                  />
-
-                  <h3 className="font-semibold text-lg">{p.name}</h3>
-
-                  <div className="flex items-center gap-3 mt-2">
-                    <p className="text-[#77966D] font-bold text-xl">
-                      ₹{p.price}
-                    </p>
-                    <p className="line-through text-gray-400">
-                      ₹{p.originalPrice}
-                    </p>
+                {/* CARD */}
+                <div
+                  className="bg-white rounded-2xl p-5 shadow-md hover:shadow-xl
+                                transition h-[420px] flex flex-col"
+                >
+                  {/* IMAGE */}
+                  <div className="w-full h-48 flex items-center justify-center mb-4">
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      onClick={() => openModal(p)}
+                      className="max-h-full max-w-full object-contain
+                                 cursor-pointer hover:scale-105
+                                 transition-transform duration-300"
+                    />
                   </div>
 
-                  <p className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full inline-block mt-3">
-                    {p.discount}% OFF
-                  </p>
+                  {/* CONTENT */}
+                  <div className="flex flex-col flex-1">
+                    <h3 className="font-semibold text-lg leading-snug">
+                      {p.name}
+                    </h3>
+
+                    <div className="flex items-center gap-3 mt-2">
+                      <p className="text-[#77966D] font-bold text-xl">
+                        ₹{p.price}
+                      </p>
+                      <p className="line-through text-gray-400">
+                        ₹{p.originalPrice}
+                      </p>
+                    </div>
+
+                    {/* PUSH TO BOTTOM */}
+                    <div className="mt-auto">
+                      <p
+                        className="text-sm bg-green-100 text-green-700
+                                    px-3 py-1 rounded-full inline-block"
+                      >
+                        {p.discount}% OFF
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </SwiperSlide>
             ))}
@@ -191,8 +209,8 @@ const SpecialOfferSection = () => {
         <div className="text-center mt-10" data-aos="fade-up">
           <button
             onClick={() => navigate("/products")}
-            className="px-10 py-3 bg-[#77966D] text-white rounded-full font-semibold
-                       shadow-md hover:bg-[#647d5a] transition"
+            className="px-10 py-3 bg-[#77966D] text-white rounded-full
+                       font-semibold shadow-md hover:bg-[#647d5a] transition"
           >
             Shop Collection
           </button>
