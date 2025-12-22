@@ -23,12 +23,21 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onOpenModal }) => 
           </span>
         )}
 
-        <img
-          src={product.image}
-          alt={product.name}
-          className="h-48 w-auto object-contain transition-transform duration-300 hover:scale-110"
-          onClick={() => onOpenModal && onOpenModal(product)}
-        />
+        {product.image ? (
+          <img
+            src={product.image}
+            alt={product.name}
+            className="h-48 w-auto object-contain transition-transform duration-300 hover:scale-110"
+            onClick={() => onOpenModal && onOpenModal(product)}
+          />
+        ) : (
+          <div 
+            className="h-48 w-full flex items-center justify-center bg-gray-100 text-gray-400 text-xs font-medium rounded-lg"
+            onClick={() => onOpenModal && onOpenModal(product)}
+          >
+            No Photo Available
+          </div>
+        )}
 
         {/* Hover Icons */}
         {hover && (
