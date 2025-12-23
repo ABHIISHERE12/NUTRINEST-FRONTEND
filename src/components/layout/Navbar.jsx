@@ -43,7 +43,7 @@ const Navbar = () => {
         shadow ? "shadow-md py-4" : "shadow-sm py-5"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-10">
         <div className="flex justify-between items-center">
           {/* LEFT SIDE: LOGO & NAV LINKS */}
           <div className="flex items-center gap-12">
@@ -64,8 +64,8 @@ const Navbar = () => {
                   <Link
                     key={item.name}
                     to={item.to}
-                    className={`relative text-sm font-semibold tracking-wide transition-colors duration-300 group py-1 ${
-                      isActive ? "text-[#82D173]" : "text-gray-600 hover:text-[#82D173]"
+                    className={`relative text-sm font-bold tracking-wide transition-colors duration-300 group py-1 ${
+                      isActive ? "text-[#82D173]" : "text-black hover:text-[#82D173]"
                     }`}
                   >
                     {item.name}
