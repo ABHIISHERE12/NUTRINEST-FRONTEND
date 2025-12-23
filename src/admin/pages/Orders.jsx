@@ -63,7 +63,7 @@ const Orders = () => {
   };
 
   const filtered = orders.filter((o) => {
-    const searchStr = `${o._id} ${o.address?.name || ""} ${o.user?.username || ""}`.toLowerCase();
+    const searchStr = `${o._id} ${o.address?.name || ""} ${o.user?.name || ""} ${o.user?.username || ""}`.toLowerCase();
     return searchStr.includes(query.toLowerCase());
   });
 
@@ -141,7 +141,7 @@ const Orders = () => {
                     <td className="px-6 py-4">
                       <div className="text-sm">
                         <p className="font-bold text-gray-900">
-                          {order.address?.name || order.user?.username || "Guest User"}
+                          {order.user?.name || order.address?.name || order.user?.username || "Guest User"}
                         </p>
                         <p className="text-gray-500">{order.address?.email || order.user?.email || "N/A"}</p>
                         <p className="text-gray-500 font-medium">{order.address?.phone || "No Phone"}</p>
