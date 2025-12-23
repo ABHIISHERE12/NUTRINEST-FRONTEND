@@ -9,7 +9,7 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onOpenModal }) => 
 
   return (
     <div
-      className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer"
+      className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 cursor-pointer"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -18,8 +18,8 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onOpenModal }) => 
         
         {/* Discount Badge */}
         {product.discount > 0 && (
-          <span className="absolute top-3 right-3 bg-red-600 text-white text-sm px-3 py-1 rounded-full font-semibold">
-            {product.discount}%
+          <span className="absolute top-4 right-4 z-10 bg-red-500 text-white text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest shadow-lg">
+            {product.discount}% OFF
           </span>
         )}
 
@@ -27,7 +27,7 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onOpenModal }) => 
           <img
             src={product.image}
             alt={product.name}
-            className="h-48 w-auto object-contain transition-transform duration-300 hover:scale-110"
+            className="h-48 w-auto object-contain transition-transform duration-700 ease-out group-hover:scale-110"
             onClick={() => onOpenModal && onOpenModal(product)}
           />
         ) : (
@@ -78,27 +78,29 @@ const ProductCard = ({ product, onAddToCart, onAddToWishlist, onOpenModal }) => 
       </div>
 
       {/* CONTENT SECTION */}
-      <div className="px-4 py-3">
+      <div className="p-6">
         {/* Product Name */}
-        <h3 className="font-semibold text-lg text-gray-900 mb-1">
+        <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-1 group-hover:text-[#82D173] transition-colors">
           {product.name}
         </h3>
 
         {/* Price */}
-        <div className="flex items-center gap-2 mb-1">
-          <p className="text-lg font-bold ">₹{product.price}</p>
+        <div className="flex items-center gap-3 mb-3">
+          <p className="text-2xl font-black text-[#82D173]">₹{product.price}</p>
           {product.originalPrice && (
-            <p className="text-gray-500 line-through">₹{product.originalPrice}</p>
+            <p className="text-sm text-gray-400 line-through font-medium">₹{product.originalPrice}</p>
           )}
         </div>
 
         {/* Rating */}
-        <div className="flex items-center text-yellow-500 text-sm">
-          {"★★★★★".slice(0, product.rating || 0)}
-          {"☆☆☆☆☆".slice(product.rating || 0)}
-          <span className="text-gray-600 ml-2 text-sm">
+        <div className="flex items-center gap-2">
+          <div className="flex text-yellow-400 text-xs shadow-black">
+            {"★★★★★".slice(0, Math.floor(product.rating || 0))}
+            {"☆☆☆☆☆".slice(Math.floor(product.rating || 0))}
+          </div>
+          <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">
             {product.numReviews > 0
-              ? `${product.numReviews} review`
+              ? `(${product.numReviews} reviews)`
               : "No reviews"}
           </span>
         </div>

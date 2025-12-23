@@ -196,13 +196,19 @@ const Home = () => {
       {/* Dry Fruits Section */}
       <div className="bg-white py-12" data-aos="fade-up">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-end mb-8">
-            <h2 className="section-title">Premium Dry Fruits</h2>
+          <div className="flex justify-between items-end mb-10">
+            <div>
+              <h2 className="text-3xl font-black tracking-tight text-gray-900 mb-2">
+                Premium Dry Fruits
+              </h2>
+              <div className="h-1 w-20 bg-[#82D173] rounded-full"></div>
+            </div>
             <Link
               to="/products"
-              className="hover:opacity-80 font-medium flex items-center transition text-primary"
+              className="group flex items-center gap-1 font-bold text-[#82D173] hover:text-[#6ebb5e] transition-colors"
             >
-              View All <ArrowRight className="w-4 h-4 ml-1" />
+              View All{" "}
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
