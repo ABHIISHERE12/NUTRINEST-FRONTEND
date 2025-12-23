@@ -44,16 +44,37 @@ const Navbar = () => {
       }`}
     >
       {/* Top Section */}
-      <div className="py-3 border-b">
+      <div className="py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4">
-          {/* LOGO (UNCHANGED) */}
-          <Link to="/" className="text-3xl font-extrabold tracking-wide">
-            <span className="text-gray-900">NUTRI</span>
-            <span className="text-[#82D173]">NEST</span>
-          </Link>
+          {/* LEFT SIDE: LOGO & NAV LINKS */}
+          <div className="flex items-center gap-12">
+            {/* LOGO - Padded right (from left edge) */}
+            <Link to="/" className="text-3xl font-extrabold tracking-wide pl-8">
+              <span className="text-gray-900">NUTRI</span>
+              <span className="text-[#82D173]">NEST</span>
+            </Link>
 
-          {/* RIGHT SIDE ICONS (UNCHANGED) */}
-          <div className="flex items-center gap-6">
+            {/* NAV MENU (DESKTOP) - Integrated here */}
+            <div className="hidden md:flex gap-8">
+              {navLinks.map((item) => {
+                const isActive = location.pathname === item.to;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.to}
+                    className={`text-sm font-medium transition hover:text-[#82D173] ${
+                      isActive ? "text-[#82D173]" : "text-gray-700"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* RIGHT SIDE ICONS */}
+          <div className="flex items-center gap-8">
             {/* ACCOUNT */}
             <div className="hidden md:flex items-center gap-2 cursor-pointer text-black">
               <User className="w-6 h-6" />
@@ -132,28 +153,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* NAV MENU (DESKTOP) – ✨ RESTYLED PART */}
-      <div className="hidden md:flex justify-center bg-white border-t">
-        <div className="flex gap-3 py-3">
-          {navLinks.map((item) => {
-            const isActive = location.pathname === item.to;
-            return (
-              <Link
-                key={item.name}
-                to={item.to}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition
-                  ${
-                    isActive
-                      ? "bg-[#82D173]/15 text-[#82D173]"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-              >
-                {item.name}
-              </Link>
-            );
-          })}
-        </div>
-      </div>
 
       {/* Cart Sidebar Dropdown */}
       <AnimatePresence>
