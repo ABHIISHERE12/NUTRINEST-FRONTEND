@@ -44,7 +44,7 @@ const Orders = () => {
   const updateStatus = async (orderId, newStatus) => {
     try {
       await axiosClient.put(`/admin/orders/${orderId}`, { status: newStatus });
-      setOrders(orders.map((o) => (o._id === orderId ? { ...o, status: newStatus } : o)));
+      setOrders(orders.map((o) => (o._id === orderId ? { ...o, deliveryStatus: newStatus } : o)));
       toast.success(`Order status updated to ${newStatus}`);
     } catch (err) {
       toast.error("Failed to update status");
@@ -178,19 +178,19 @@ const Orders = () => {
                     {/* STATUS */}
                     <td className="px-6 py-4">
                       <select
-                        value={order.status}
+                        value={order.deliveryStatus || order.status}
                         onChange={(e) => updateStatus(order._id, e.target.value)}
-                        className={`text-xs font-semibold px-3 py-1.5 rounded-full border-0 outline-none cursor-pointer shadow-sm ${
-                          order.status === "delivered"
-                            ? "bg-green-100 text-green-700"
-                            : order.status === "shipped"
-                            ? "bg-blue-100 text-blue-700"
-                            : order.status === "cancelled"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-gray-100 text-gray-600"
+                        className={`text-xs font-bold px-4 py-2 rounded-full border-0 outline-none cursor-pointer shadow-sm transition-all ${
+                          (order.deliveryStatus || order.status) === "delivered"
+                            ? "bg-green-100 text-green-700 hover:bg-green-200"
+                            : (order.deliveryStatus || order.status) === "shipped"
+                            ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                            : (order.deliveryStatus || order.status) === "cancelled"
+                            ? "bg-red-100 text-red-700 hover:bg-red-200"
+                            : "bg-amber-100 text-amber-700 hover:bg-amber-200"
                         }`}
                       >
-                        <option value="pending">Pending</option>
+                        <option value="pending">Not Completed</option>
                         <option value="shipped">Shipped</option>
                         <option value="delivered">Delivered</option>
                         <option value="cancelled">Cancelled</option>
