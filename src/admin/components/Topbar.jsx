@@ -7,46 +7,45 @@ export default function Topbar({ onToggleSidebar }) {
   const avatarUrl = savedData.avatar || "/profile.jpg";
 
   return (
-    <header className="topbar bg-light border-bottom d-flex align-items-center justify-content-between p-3">
+    <header className="topbar bg-white border-bottom d-flex align-items-center justify-content-between px-4 py-2">
+      {/* LEFT SECTION */}
       <div className="d-flex align-items-center gap-3">
         <button className="btn btn-sm d-lg-none" onClick={onToggleSidebar}>
-          <Menu size={24} />
+          <Menu size={22} />
         </button>
 
-        {/* New minimalist brand: circular icon + styled text */}
-        <div className="d-flex align-items-center" style={{ gap: 12 }}>
-          <div
-            className="brand-icon"
+        {/* LOGO TEXT (matches image) */}
+        <div className="d-flex align-items-center">
+          <span
             style={{
-              background: "linear-gradient(135deg,#82D173,#5F9E4A)",
-              color: "#fff",
-              borderRadius: 12,
-              width: 48,
-              height: 48,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: 700,
-              boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+              fontSize: 22,
+              fontWeight: 800,
+              letterSpacing: 1,
+              color: "#111827", // dark text
             }}
           >
-            NN
-          </div>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 800, color: "#2b6a2b" }}>
-              Admin Panel
-            </div>
-            <div style={{ fontSize: 12, color: "#6b7280", marginTop: -2 }}>
-              NutriNest
-            </div>
-          </div>
+            NUTRI
+          </span>
+          <span
+            style={{
+              fontSize: 22,
+              fontWeight: 800,
+              letterSpacing: 1,
+              color: "#7AC943", // green like logo
+              marginLeft: 2,
+            }}
+          >
+            NEST
+          </span>
         </div>
       </div>
 
-      <div className="d-flex gap-3">
+      {/* RIGHT SECTION */}
+      <div className="d-flex align-items-center gap-3">
         <button className="btn btn-light position-relative">
           <Bell size={20} />
         </button>
+
         <Navbar avatarUrl={avatarUrl} />
       </div>
     </header>
