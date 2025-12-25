@@ -42,9 +42,9 @@ export default function Topbar({ onToggleSidebar }) {
 
       {/* RIGHT SECTION */}
       <div className="d-flex align-items-center gap-3">
-        <button className="btn btn-light position-relative">
+        {/* <button className="btn btn-light position-relative">
           <Bell size={20} />
-        </button>
+        </button> */}
 
         <Navbar avatarUrl={avatarUrl} />
       </div>
